@@ -12,8 +12,15 @@ Example
 In your config/production.rb
 
 config.action_controller.asset_host = AssetHostingWithMinimumSsl.new(
-  "http://assets%d.example.com", # will serve non-SSL assetts on http://assets[1-4].example.com
+  "http://assets%d.example.com", # will serve non-SSL assetts on http://assets[0-3].example.com
   "https://assets1.example.com"  # will serve SSL assets on https://assets1.example.com
+)
+
+It is also possible to use a proc:
+
+config.action_controller.asset_host = AssetHostingWithMinimumSsl.new(
+  Proc.new{ |source| "http://assets%d.example.com/" % (source.hash % 2) },  # will serve non-SSL assetts on http://assets[0-1].example.com
+  Proc.new{ |source| "https://assets%d.example.com/" % (source.hash % 2) }  # will serve SSL assets on https://assets[0-1].example.com
 )
 
 

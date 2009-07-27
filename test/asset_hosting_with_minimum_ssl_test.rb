@@ -47,6 +47,17 @@ class AssetHostingWithMinimumSslTest < Test::Unit::TestCase
       @asset_host.call("/stylesheets/application.css", ssl_request_from("IE"))
   end
   
+  def test_should_accept_proc_as_asset_host
+    non_ssl_proc = Proc.new{ |source| "http://assets%d.example.com/" % (source.hash % 2) }
+    ssl_proc = Proc.new{ |source| "https://assets%d.example.com/" % (source.hash % 2) }
+    @asset_host = AssetHostingWithMinimumSsl.new(non_ssl_proc, ssl_proc)
+    assert_match \
+      ssl_host,
+      @asset_host.call("/stylesheets/test.css", ssl_request_from("Firefox"))
+    assert_match \
+      non_ssl_host,
+      @asset_host.call("/images/blank.gif", ssl_request_from("Firefox"))
+  end
 
   private
     def non_ssl_host

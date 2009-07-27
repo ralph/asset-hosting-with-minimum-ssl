@@ -25,11 +25,15 @@ class AssetHostingWithMinimumSsl
   
   private
     def asset_host(source)
-      @asset_host % (source.hash % 4)
+      generic_asset_host(@asset_host, source)
     end
 
     def ssl_asset_host(source)
-      @ssl_asset_host % (source.hash % 4)
+      generic_asset_host(@ssl_asset_host, source)
+    end
+
+    def generic_asset_host(asset_host, source)
+      asset_host.is_a?(Proc) ? asset_host.call(source) : asset_host % (source.hash % 4)
     end
 
 
